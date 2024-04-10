@@ -19,7 +19,7 @@ public class PlayerColor
     public Color panelColor;
 }
 
-public class GameController : MonoBehaviour
+public class LocalGameController : MonoBehaviour
 {
 
     public TextMeshProUGUI[] buttonList;

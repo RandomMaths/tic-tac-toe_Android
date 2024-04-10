@@ -10,7 +10,7 @@ public class GridSpace : MonoBehaviour
     public Button button;
     public TextMeshProUGUI buttonText;
 
-    private GameController gameController;
+    private LocalGameController gameController;
 
     public void SetSpace()
     {
@@ -19,7 +19,7 @@ public class GridSpace : MonoBehaviour
         gameController.EndTurn();   
     }
 
-    public void SetGameControllerReference(GameController controller)
+    public void SetGameControllerReference(LocalGameController controller)
     {
         gameController = controller;
     }

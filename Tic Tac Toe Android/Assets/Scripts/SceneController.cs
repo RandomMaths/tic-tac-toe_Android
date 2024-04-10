@@ -12,8 +12,7 @@ public class SceneController : MonoBehaviour
     
     public void LoadOnline()
     {
-        Debug.Log("Implement Networking");
-        //SceneManager.LoadScene("Local");
+        SceneManager.LoadScene("Online");
     }
 
     public void LoadMenu()
