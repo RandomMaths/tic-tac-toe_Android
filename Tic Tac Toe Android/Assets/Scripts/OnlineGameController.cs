@@ -14,8 +14,6 @@ public class OnlineGameController : NetworkBehaviour
     public NetworkVariable<int> hostSide;
     public NetworkList<int> integerList;
 
-    //private int[] cells;
-
     [SerializeField] private Button[] buttonList;
 
     [SerializeField] private GameObject gameOverPanel;
@@ -98,6 +96,7 @@ public class OnlineGameController : NetworkBehaviour
         {
             integerList[grid] = 1;
             //Disableing button for host
+           
             for (int i = 0; i < integerList.Count; i++)
             {
                 if (integerList[i] == 0)
@@ -109,12 +108,14 @@ public class OnlineGameController : NetworkBehaviour
                     buttonList[i].interactable = false;
                 }
             }
-
-            //Also disable for client
             UpdateButtonsClientRpc(grid);
+            
+            //Also disable for client
+            UpdatePlayerClientRpc();
         } else if (!NetworkManager.Singleton.IsHost)
         {
             //Disbaling button for client side
+            
             for (int i = 0; i < integerList.Count; i++)
             {
                 if (integerList[i] == 0)
@@ -128,6 +129,16 @@ public class OnlineGameController : NetworkBehaviour
             }
             //Also disable for host side
             UpdateButtonsServerRpc(grid);
+            
+            if (playerX.panel.color == activePlayerColor.panelColor)
+            {
+                SetPlayerColor(playerO, playerX);
+            }
+            else if (playerO.panel.color == activePlayerColor.panelColor)
+            {
+                SetPlayerColor(playerX, playerO);
+            }
+            UpdatePlayerClientRpc();
         }
         ToggleSideServerRpc();
     }
@@ -157,6 +168,17 @@ public class OnlineGameController : NetworkBehaviour
                 buttonList[i].interactable = false;
             }
         }
+       
+
+        if (playerX.panel.color == activePlayerColor.panelColor)
+        {
+            SetPlayerColor(playerO, playerX);
+        }
+        else if (playerO.panel.color == activePlayerColor.panelColor)
+        {
+            SetPlayerColor(playerX, playerO);
+        }
+
         buttonList[grid].interactable = false;
         UpdateButtonsClientRpc(grid);
     }
@@ -166,6 +188,7 @@ public class OnlineGameController : NetworkBehaviour
     {
         //cells[grid] = 1;
         buttonList[grid].transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = currentTurn.Value.ToString();
+
         for (int i = 0; i < integerList.Count; i++)
         {
             if (integerList[i] == 0)
@@ -177,7 +200,21 @@ public class OnlineGameController : NetworkBehaviour
                 buttonList[i].interactable = false;
             }
         }
+
         buttonList[grid].interactable = false;
+    }
+
+    [ClientRpc]
+    private void UpdatePlayerClientRpc()
+    {
+        if (playerX.panel.color == activePlayerColor.panelColor)
+        {
+            SetPlayerColor(playerO, playerX);
+        }
+        else if (playerO.panel.color == activePlayerColor.panelColor)
+        {
+            SetPlayerColor(playerX, playerO);
+        }
     }
 
     [ClientRpc]
