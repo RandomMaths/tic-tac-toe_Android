@@ -223,6 +223,10 @@ PrefabInstance:
       propertyPath: m_Interactable
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5085448951008564070, guid: 8726064013cb3094ea84cf51f01e936e, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_StringArgument
+      value: Local
+      objectReference: {fileID: 0}
     - target: {fileID: 6918489780876815051, guid: 8726064013cb3094ea84cf51f01e936e, type: 3}
       propertyPath: m_Name
       value: Cell 5
@@ -475,6 +479,10 @@ PrefabInstance:
     - target: {fileID: 5085448951008564070, guid: 8726064013cb3094ea84cf51f01e936e, type: 3}
       propertyPath: m_Interactable
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5085448951008564070, guid: 8726064013cb3094ea84cf51f01e936e, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_StringArgument
+      value: Local
       objectReference: {fileID: 0}
     - target: {fileID: 6918489780876815051, guid: 8726064013cb3094ea84cf51f01e936e, type: 3}
       propertyPath: m_Name
@@ -1120,6 +1128,10 @@ PrefabInstance:
       propertyPath: m_Interactable
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5085448951008564070, guid: 8726064013cb3094ea84cf51f01e936e, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_StringArgument
+      value: Local
+      objectReference: {fileID: 0}
     - target: {fileID: 6918489780876815051, guid: 8726064013cb3094ea84cf51f01e936e, type: 3}
       propertyPath: m_Name
       value: Cell 3
@@ -1417,6 +1429,10 @@ PrefabInstance:
     - target: {fileID: 5085448951008564070, guid: 8726064013cb3094ea84cf51f01e936e, type: 3}
       propertyPath: m_Interactable
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5085448951008564070, guid: 8726064013cb3094ea84cf51f01e936e, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_StringArgument
+      value: Local
       objectReference: {fileID: 0}
     - target: {fileID: 6918489780876815051, guid: 8726064013cb3094ea84cf51f01e936e, type: 3}
       propertyPath: m_Name
@@ -2137,6 +2153,10 @@ PrefabInstance:
     - target: {fileID: 5085448951008564070, guid: 8726064013cb3094ea84cf51f01e936e, type: 3}
       propertyPath: m_Interactable
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5085448951008564070, guid: 8726064013cb3094ea84cf51f01e936e, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_StringArgument
+      value: Local
       objectReference: {fileID: 0}
     - target: {fileID: 6918489780876815051, guid: 8726064013cb3094ea84cf51f01e936e, type: 3}
       propertyPath: m_Name
@@ -2917,6 +2937,10 @@ PrefabInstance:
       propertyPath: m_Interactable
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5085448951008564070, guid: 8726064013cb3094ea84cf51f01e936e, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_StringArgument
+      value: Local
+      objectReference: {fileID: 0}
     - target: {fileID: 6918489780876815051, guid: 8726064013cb3094ea84cf51f01e936e, type: 3}
       propertyPath: m_Name
       value: Cell 4
@@ -3025,6 +3049,10 @@ PrefabInstance:
     - target: {fileID: 5085448951008564070, guid: 8726064013cb3094ea84cf51f01e936e, type: 3}
       propertyPath: m_Interactable
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5085448951008564070, guid: 8726064013cb3094ea84cf51f01e936e, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_StringArgument
+      value: Local
       objectReference: {fileID: 0}
     - target: {fileID: 6918489780876815051, guid: 8726064013cb3094ea84cf51f01e936e, type: 3}
       propertyPath: m_Name
@@ -3178,6 +3206,10 @@ PrefabInstance:
     - target: {fileID: 5085448951008564070, guid: 8726064013cb3094ea84cf51f01e936e, type: 3}
       propertyPath: m_Interactable
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5085448951008564070, guid: 8726064013cb3094ea84cf51f01e936e, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_StringArgument
+      value: Local
       objectReference: {fileID: 0}
     - target: {fileID: 6918489780876815051, guid: 8726064013cb3094ea84cf51f01e936e, type: 3}
       propertyPath: m_Name
@@ -3818,6 +3850,10 @@ PrefabInstance:
     - target: {fileID: 5085448951008564070, guid: 8726064013cb3094ea84cf51f01e936e, type: 3}
       propertyPath: m_Interactable
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5085448951008564070, guid: 8726064013cb3094ea84cf51f01e936e, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_StringArgument
+      value: Local
       objectReference: {fileID: 0}
     - target: {fileID: 6918489780876815051, guid: 8726064013cb3094ea84cf51f01e936e, type: 3}
       propertyPath: m_Name

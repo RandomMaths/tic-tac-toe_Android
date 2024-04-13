@@ -22,21 +22,21 @@ public class PlayerColor
 public class LocalGameController : MonoBehaviour
 {
 
-    public TextMeshProUGUI[] buttonList;
+    [SerializeField] private TextMeshProUGUI[] buttonList;
     private string playerSide;
 
-    public GameObject gameOverPanel;
-    public TextMeshProUGUI gameOverText;
+    [SerializeField] private GameObject gameOverPanel;
+    [SerializeField] private TextMeshProUGUI gameOverText;
 
     private int moveCount;
 
-    public GameObject restartButton;
+    [SerializeField] private GameObject restartButton;
 
-    public Player playerX;
-    public Player playerO;
-    public PlayerColor activePlayerColor;
-    public PlayerColor inactivePlayerColor;
-    public GameObject startInfo;
+    [SerializeField] private Player playerX;
+    [SerializeField] private Player playerO;
+    [SerializeField] private PlayerColor activePlayerColor;
+    [SerializeField] private PlayerColor inactivePlayerColor;
+    [SerializeField] private GameObject startInfo;
 
     private void Awake()
     {
@@ -51,7 +51,7 @@ public class LocalGameController : MonoBehaviour
     {
         for(int i = 0; i < buttonList.Length; i++)
         {
-            buttonList[i].GetComponentInParent<GridSpace>().SetGameControllerReference(this);
+            buttonList[i].GetComponentInParent<GridSpace>().SetLocalGameControllerReference(this);
         }
     }
 
