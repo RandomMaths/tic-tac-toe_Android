@@ -104,6 +104,8 @@ public class OnlineGameController : NetworkBehaviour
 
         UpdateGridRpc(grid);
         UpdateButtonsRpc(grid);
+
+        CheckBoardRpc();
   
         //Switch Sides
         ToggleSideRpc();
@@ -127,7 +129,7 @@ public class OnlineGameController : NetworkBehaviour
     private void UpdateButtonsRpc(int grid)
     {
         SetBoardInteractable(false);
-        buttonList[grid].transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = currentTurn.Value.ToString();
+        buttonList[grid].transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = (currentTurn.Value == 1) ? "X" : "O";
         if(NetworkManager.Singleton.IsHost && currentTurn.Value != hostSide.Value)
         {
             UpdateButtons();
@@ -137,6 +139,53 @@ public class OnlineGameController : NetworkBehaviour
         }
         
         buttonList[grid].interactable = false;
+    }
+
+    [Rpc(SendTo.Everyone)]
+    private void CheckBoardRpc()
+    {
+        for (int i = 0; i <= 2; i++)
+        {
+            if (integerList[i * 3 + 0] == currentTurn.Value && integerList[i * 3 + 1] == currentTurn.Value && integerList[i * 3 + 2] == currentTurn.Value)
+            {
+                GameOverRpc();
+            }
+
+            if (integerList[i] == currentTurn.Value && integerList[1 * 3 + i] == currentTurn.Value && integerList[3 * 2 + i] == currentTurn.Value)
+            {
+                GameOverRpc();
+            }
+        }
+
+        if (integerList[0] == currentTurn.Value && integerList[4] == currentTurn.Value && integerList[8] == currentTurn.Value)
+        {
+            GameOverRpc();
+        }
+
+        if (integerList[2] == currentTurn.Value && integerList[4] == currentTurn.Value && integerList[6] == currentTurn.Value)
+        {
+            GameOverRpc();
+        }
+    }
+
+    [Rpc(SendTo.Everyone)]
+    private void GameOverRpc()
+    {
+        Debug.Log("GameOver");
+        SetBoardInteractable(false);
+        restartButton.SetActive(true);
+        gameOverPanel.SetActive(true);
+        
+        gameOverText.text = "You Lost";
+        if (NetworkManager.Singleton.IsHost && currentTurn.Value == hostSide.Value)
+        {
+            gameOverText.text = "You Won";
+        }
+        else if (!NetworkManager.Singleton.IsHost && currentTurn.Value != hostSide.Value)
+        {
+            gameOverText.text = "You Won";
+        }
+        ToggleSideRpc();
     }
 
     private void UpdateButtons()
