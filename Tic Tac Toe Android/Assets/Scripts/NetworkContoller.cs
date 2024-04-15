@@ -4,10 +4,18 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Unity.Netcode;
+using Unity.Services.Core;
+using Unity.Services.Authentication;
+using Unity.Services.Relay;
+using Unity.Services.Relay.Models;
+using Unity.Netcode.Transports.UTP;
+using Unity.Networking.Transport.Relay;
 
 public class NetworkContoller : NetworkBehaviour
 {
     public static NetworkContoller Instance;
+
+    private string joinCode;
 
     [SerializeField] private GameObject game;
     [SerializeField] private GameObject networking;
@@ -31,7 +39,7 @@ public class NetworkContoller : NetworkBehaviour
         }
     }
 
-    private void Start()
+    private async void Start()
     {
         placeholderPanel.SetActive(false);
 
@@ -43,6 +51,10 @@ public class NetworkContoller : NetworkBehaviour
                 StartGame();
             }
         };
+
+        await UnityServices.InitializeAsync();
+        if(!AuthenticationService.Instance.IsSignedIn)
+            await AuthenticationService.Instance.SignInAnonymouslyAsync();
     }
 
     private void StartGame()
@@ -51,10 +63,21 @@ public class NetworkContoller : NetworkBehaviour
         DisableNetworkUIRpc();
     }
 
-    public void StartHost()
+    public async void StartHost()
     {
-        ActivatePlaceholderPanel(true);
-        NetworkManager.Singleton.StartHost();
+        try
+        {
+            Allocation allocation = await RelayService.Instance.CreateAllocationAsync(1);
+            joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
+
+            RelayServerData relayServerData = new RelayServerData(allocation, "dtls");
+            NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
+            NetworkManager.Singleton.StartHost();
+            ActivatePlaceholderPanel(true);
+        }catch (RelayServiceException e)
+        {
+            Debug.Log(e.ToString());
+        }
     }
 
     public void StartClient()
@@ -66,11 +89,24 @@ public class NetworkContoller : NetworkBehaviour
     {
         if(NetworkManager.Singleton.IsConnectedClient)
             NetworkManager.Singleton.Shutdown();
+        Destroy(NetworkManager);
     }
 
-    public void JoinGame()
+    public async void JoinGame()
     {
-        NetworkManager.Singleton.StartClient();
+        try
+        {
+            Debug.Log(codeArea.transform.GetChild(0).GetChild(2).GetComponent<TextMeshProUGUI>().text);
+            string code = codeArea.transform.GetChild(0).GetChild(2).GetComponent<TextMeshProUGUI>().text;
+            code = code.Substring(0, 6);
+            JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(code);
+            RelayServerData relayServerData = new RelayServerData(joinAllocation, "dtls");
+            NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
+            NetworkManager.Singleton.StartClient();
+        } catch (RelayServiceException e)
+        {
+            Debug.Log(e.ToString());
+        }
     }
 
     private void ActivatePlaceholderPanel(bool isHost)
@@ -80,7 +116,7 @@ public class NetworkContoller : NetworkBehaviour
         {
             labelText.text = "Your Code:";
             codeArea.GetComponent<TMP_InputField>().interactable = false;
-            codeArea.transform.GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>().text = "Your MOM";
+            codeArea.transform.GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>().text = joinCode;
             codeArea.transform.GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>().color = Color.white;
             joinButton.interactable = false;
             joinButton.GetComponent<Image>().sprite = null;

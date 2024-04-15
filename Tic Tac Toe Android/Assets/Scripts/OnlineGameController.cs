@@ -188,6 +188,41 @@ public class OnlineGameController : NetworkBehaviour
         ToggleSideRpc();
     }
 
+    [Rpc(SendTo.Everyone)]
+    private void RestartGameRpc()
+    {
+        restartButton.SetActive(false);
+        gameOverPanel.SetActive(false);
+        if (NetworkManager.Singleton.IsHost)
+        {
+            playerX.button.interactable = true;
+            playerO.button.interactable = true;
+            startInfo.SetActive(true);
+        }
+        SetPlayerColorInactive();
+        ResetButtons();
+        ResetNetworkVariablesRpc();
+    }
+
+    [Rpc(SendTo.Owner)]
+    private void ResetNetworkVariablesRpc()
+    {
+        currentTurn.Value = 0;
+        hostSide.Value = 0;
+        for(int i = 0;i < 9;i++)
+        {
+            integerList[i] = 0;
+        }
+    }
+
+    private void ResetButtons()
+    {
+        foreach(Button button in buttonList)
+        {
+            button.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "";
+        }
+    }
+
     private void UpdateButtons()
     {
         for (int i = 0; i < integerList.Count; i++)
@@ -236,6 +271,11 @@ public class OnlineGameController : NetworkBehaviour
         playerO.button.onClick.AddListener(delegate
         {
             SetStartingSideRpc(2);
+        });
+
+        restartButton.GetComponent<Button>().onClick.AddListener(delegate
+        {
+            RestartGameRpc();
         });
     }
 
