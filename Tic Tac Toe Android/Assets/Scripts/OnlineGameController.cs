@@ -9,7 +9,6 @@ using System;
 
 public class OnlineGameController : NetworkBehaviour
 {
-    private int moveCount;
     public NetworkVariable<int> currentTurn;
     public NetworkVariable<int> hostSide;
     public NetworkList<int> integerList;
@@ -88,13 +87,19 @@ public class OnlineGameController : NetworkBehaviour
     [Rpc(SendTo.Everyone)]
     private void SetPlayerSideRpc(int side)
     {
-        if (side == 1)
+        if(gameOverText.text == "")
         {
-            SetPlayerColor(playerX, playerO);
-        }
-        else if (side == 2)
+            if (side == 1)
+            {
+                SetPlayerColor(playerX, playerO);
+            }
+            else if (side == 2)
+            {
+                SetPlayerColor(playerO, playerX);
+            }
+        } else
         {
-            SetPlayerColor(playerO, playerX);
+            SetPlayerColorInactive();
         }
     }
 
@@ -148,44 +153,53 @@ public class OnlineGameController : NetworkBehaviour
         {
             if (integerList[i * 3 + 0] == currentTurn.Value && integerList[i * 3 + 1] == currentTurn.Value && integerList[i * 3 + 2] == currentTurn.Value)
             {
-                GameOverRpc();
+                GameOverRpc(false);
             }
 
             if (integerList[i] == currentTurn.Value && integerList[1 * 3 + i] == currentTurn.Value && integerList[3 * 2 + i] == currentTurn.Value)
             {
-                GameOverRpc();
+                GameOverRpc(false);
             }
         }
 
         if (integerList[0] == currentTurn.Value && integerList[4] == currentTurn.Value && integerList[8] == currentTurn.Value)
         {
-            GameOverRpc();
+            GameOverRpc(false);
         }
 
         if (integerList[2] == currentTurn.Value && integerList[4] == currentTurn.Value && integerList[6] == currentTurn.Value)
         {
-            GameOverRpc();
+            GameOverRpc(false);
+        }
+
+        if (GridComplete())
+        {
+            GameOverRpc(true);
         }
     }
 
     [Rpc(SendTo.Everyone)]
-    private void GameOverRpc()
+    private void GameOverRpc(bool draw)
     {
-        Debug.Log("GameOver");
         SetBoardInteractable(false);
+        SetPlayerColorInactive();
         restartButton.SetActive(true);
         gameOverPanel.SetActive(true);
-        
-        gameOverText.text = "You Lost";
-        if (NetworkManager.Singleton.IsHost && currentTurn.Value == hostSide.Value)
+
+        if (draw){
+            gameOverText.text = "DRAW";
+        } else if (!draw)
         {
-            gameOverText.text = "You Won";
+            gameOverText.text = "You Lost";
+            if (NetworkManager.Singleton.IsHost && currentTurn.Value == hostSide.Value)
+            {
+                gameOverText.text = "You Won";
+            }
+            else if (!NetworkManager.Singleton.IsHost && currentTurn.Value != hostSide.Value)
+            {
+                gameOverText.text = "You Won";
+            }
         }
-        else if (!NetworkManager.Singleton.IsHost && currentTurn.Value != hostSide.Value)
-        {
-            gameOverText.text = "You Won";
-        }
-        ToggleSideRpc();
     }
 
     [Rpc(SendTo.Everyone)]
@@ -193,6 +207,7 @@ public class OnlineGameController : NetworkBehaviour
     {
         restartButton.SetActive(false);
         gameOverPanel.SetActive(false);
+        gameOverText.text = "";
         if (NetworkManager.Singleton.IsHost)
         {
             playerX.button.interactable = true;
@@ -213,6 +228,16 @@ public class OnlineGameController : NetworkBehaviour
         {
             integerList[i] = 0;
         }
+    }
+
+    private bool GridComplete()
+    {
+        for(int i = 0;i < 9; i++)
+        {
+            if(integerList[i] == 0)
+                return false;
+        }
+        return true;
     }
 
     private void ResetButtons()
