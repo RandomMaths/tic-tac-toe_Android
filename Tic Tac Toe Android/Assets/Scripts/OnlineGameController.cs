@@ -27,6 +27,7 @@ public class OnlineGameController : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {   
+        this.GetComponent<Canvas>().worldCamera = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
         AddButtonListener();
         SetBoardInteractable(false);
 
@@ -154,27 +155,32 @@ public class OnlineGameController : NetworkBehaviour
             if (integerList[i * 3 + 0] == currentTurn.Value && integerList[i * 3 + 1] == currentTurn.Value && integerList[i * 3 + 2] == currentTurn.Value)
             {
                 GameOverRpc(false);
+                return;
             }
 
             if (integerList[i] == currentTurn.Value && integerList[1 * 3 + i] == currentTurn.Value && integerList[3 * 2 + i] == currentTurn.Value)
             {
                 GameOverRpc(false);
+                return;
             }
         }
 
         if (integerList[0] == currentTurn.Value && integerList[4] == currentTurn.Value && integerList[8] == currentTurn.Value)
         {
             GameOverRpc(false);
+            return;
         }
 
         if (integerList[2] == currentTurn.Value && integerList[4] == currentTurn.Value && integerList[6] == currentTurn.Value)
         {
             GameOverRpc(false);
+            return;
         }
 
         if (GridComplete())
         {
             GameOverRpc(true);
+            return;
         }
     }
 
@@ -317,5 +323,4 @@ public class OnlineGameController : NetworkBehaviour
         playerX.button.interactable = toggle;
         playerO.button.interactable = toggle;
     }
-
 }

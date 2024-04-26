@@ -21,14 +21,16 @@ public class PlayerColor
 
 public class LocalGameController : MonoBehaviour
 {
-
-    [SerializeField] private TextMeshProUGUI[] buttonList;
+    private int moveCount;
     private string playerSide;
 
+    //[SerializeField] private GameObject gameModePanel;
+
+    [SerializeField] private TextMeshProUGUI[] buttonList;
+
+    [SerializeField] private GameObject startInfo;
     [SerializeField] private GameObject gameOverPanel;
     [SerializeField] private TextMeshProUGUI gameOverText;
-
-    private int moveCount;
 
     [SerializeField] private GameObject restartButton;
 
@@ -36,13 +38,13 @@ public class LocalGameController : MonoBehaviour
     [SerializeField] private Player playerO;
     [SerializeField] private PlayerColor activePlayerColor;
     [SerializeField] private PlayerColor inactivePlayerColor;
-    [SerializeField] private GameObject startInfo;
 
     private void Awake()
     {
+        //playerX.button.interactable = false;
+        //playerO.button.interactable = false;
         gameOverPanel.SetActive(false);
         SetGameControllerReferenceOnButtons();
-        playerSide = "X";
         moveCount = 0;
         restartButton.SetActive(false);
     }
@@ -155,6 +157,14 @@ public class LocalGameController : MonoBehaviour
         gameOverPanel.SetActive(true);
         gameOverText.text = value;
     }
+
+    //public void SetGameMode(string text)
+    //{
+    //    playerX.button.interactable = true;
+    //    playerO.button.interactable = true;
+    //    Debug.Log(text);
+    //    gameModePanel.SetActive(false);
+    //}
 
     public void SetStartingSide(string startingSide)
     {
