@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -21,10 +22,11 @@ public class PlayerColor
 
 public class LocalGameController : MonoBehaviour
 {
-    private int moveCount;
     private string playerSide;
 
-    //[SerializeField] private GameObject gameModePanel;
+    private int[] values;
+
+    [SerializeField] private GameObject gameModePanel;
 
     [SerializeField] private TextMeshProUGUI[] buttonList;
 
@@ -39,14 +41,91 @@ public class LocalGameController : MonoBehaviour
     [SerializeField] private PlayerColor activePlayerColor;
     [SerializeField] private PlayerColor inactivePlayerColor;
 
+    //AI variables
+    private bool computerPlays;
+    private string computerSide;
+    private bool computerTurn;
+    private int score;
+    private int bestScore = int.MinValue;
+    private int bestMove;
+
     private void Awake()
     {
-        //playerX.button.interactable = false;
-        //playerO.button.interactable = false;
+        values = new int[9];
+        playerX.button.interactable = false;
+        playerO.button.interactable = false;
         gameOverPanel.SetActive(false);
         SetGameControllerReferenceOnButtons();
-        moveCount = 0;
         restartButton.SetActive(false);
+    }
+
+    public void Update()
+    {
+        bestMove = 0;
+        score = 0;
+        bestScore = int.MinValue;
+        if(computerPlays && computerTurn)
+        {
+            for(int i = 0;i < 9; i++)
+            {
+                if (values[i] == 0)
+                {
+                    values[i] = GetPlayerValue(computerSide);
+                    score = MiniMax(0, false);
+                    values[i] = 0;
+                    if(score >= bestScore)
+                    {
+                        bestScore = score;
+                        bestMove = i;
+                    }
+                }
+            }
+            buttonList[bestMove].text = computerSide;
+            buttonList[bestMove].GetComponentInParent<Button>().interactable = false;
+            EndTurn();
+        }
+    }
+
+    private int MiniMax(int depth, bool isMaximizing)
+    {
+        if(CheckWinner() != "N")
+        {
+            if (CheckWinner() == "D")
+                return 0;
+            else
+                return CheckWinner() == computerSide ? 1 : -1;
+        }
+
+        if (isMaximizing)
+        {
+            int localBestScore = int.MinValue;
+            for(int i = 0;i < 9; i++)
+            {
+                if(values[i] == 0)
+                {
+                    values[i] = GetPlayerValue(computerSide);
+                    int localScore = MiniMax(depth + 1, false);
+                    values[i] = 0;
+                    localBestScore = Mathf.Max(localScore, localBestScore);
+                }
+            }
+            return localBestScore;
+        }
+        else
+        {
+            int localBestScore = int.MaxValue;
+            for (int i = 0; i < 9; i++)
+            {
+                if (values[i] == 0)
+                {
+                    values[i] = GetPlayerValue(playerSide);
+                    int localScore = MiniMax(depth + 1, true);
+                    values[i] = 0;
+                    localBestScore = Mathf.Min(localScore, localBestScore);
+                }
+            }
+            return localBestScore;
+        }
     }
 
     public void SetGameControllerReferenceOnButtons()
@@ -64,42 +143,10 @@ public class LocalGameController : MonoBehaviour
 
     public void EndTurn()
     {
-        moveCount++;
-        if (buttonList[0].text == playerSide && buttonList[1].text == playerSide && buttonList[2].text == playerSide)
+        SynchronizeValues();
+        if(CheckWinner() != "N")
         {
-            GameOver(playerSide);
-        }
-        else if (buttonList[3].text == playerSide && buttonList[4].text == playerSide && buttonList[5].text == playerSide)
-        {
-            GameOver(playerSide);
-        }
-        else if (buttonList[6].text == playerSide && buttonList[7].text == playerSide && buttonList[8].text == playerSide)
-        {
-            GameOver(playerSide);
-        }
-        else if (buttonList[0].text == playerSide && buttonList[3].text == playerSide && buttonList[6].text == playerSide)
-        {
-            GameOver(playerSide);
-        }
-        else if (buttonList[1].text == playerSide && buttonList[4].text == playerSide && buttonList[7].text == playerSide)
-        {
-            GameOver(playerSide);
-        }
-        else if (buttonList[2].text == playerSide && buttonList[5].text == playerSide && buttonList[8].text == playerSide)
-        {
-            GameOver(playerSide);
-        }
-        else if (buttonList[0].text == playerSide && buttonList[4].text == playerSide && buttonList[8].text == playerSide)
-        {
-            GameOver(playerSide);
-        }
-        else if (buttonList[2].text == playerSide && buttonList[4].text == playerSide && buttonList[6].text == playerSide)
-        {
-            GameOver(playerSide);
-        }
-        else if(moveCount >= 9)
-        {
-            GameOver("draw");
+            GameOver(CheckWinner());
         }
         else
         {
@@ -107,7 +154,55 @@ public class LocalGameController : MonoBehaviour
         }
     }
 
-    void SetPlayerColor(Player newPlayer, Player oldPlayer)
+    void SynchronizeValues()
+    {
+        for(int i = 0; i < values.Length; i++)
+        {
+            if (buttonList[i].text == "X")
+                values[i] = 1;
+            if (buttonList[i].text == "O")
+                values[i] = 2;
+            if (buttonList[i].text == "")
+                values[i] = 0;
+        }
+    }
+
+    string CheckWinner()
+    {
+        for(int side = 1;side <= 2; side++)
+        {
+            for (int i = 0; i <= 2; i++)
+            {
+                if (values[i * 3 + 0] == side && values[i * 3 + 1] == side && values[i * 3 + 2] == side)
+                {
+                    return (side == 1) ? "X" : "O";
+                }
+
+                if (values[i] == side && values[1 * 3 + i] == side && values[3 * 2 + i] == side)
+                {
+                    return (side == 1) ? "X" : "O";
+                }
+            }
+
+            if (values[0] == side && values[4] == side && values[8] == side)
+            {
+                return (side == 1) ? "X" : "O";
+            }
+
+            if (values[2] == side && values[4] == side && values[6] == side)
+            {
+                return (side == 1) ? "X" : "O";
+            }
+        }
+
+        for(int i = 0;i < values.Length; i++)
+            if (values[i] == 0)
+                return "N";
+        
+        return "D";
+    }
+
+void SetPlayerColor(Player newPlayer, Player oldPlayer)
     {
         newPlayer.panel.color = activePlayerColor.panelColor;
         newPlayer.text.color = activePlayerColor.textColor;
@@ -127,20 +222,23 @@ public class LocalGameController : MonoBehaviour
     {
         SetBoardInteractable(false);
 
-        if (winningPlayer.Equals("draw"))
+        if (winningPlayer.Equals("D"))
         {
-            SetGameOverText("It's a draw");
+            SetGameOverText("DRAW");
             SetPlayerColorInactive();
         }
         else
-            SetGameOverText(playerSide + " Wins!");
+            SetGameOverText(winningPlayer + " Wins!");
 
         restartButton.SetActive(true);
     }
 
     void ChangeSides()
     {
-        playerSide = (playerSide == "X") ? "O" : "X";
+        if(!computerPlays)
+            playerSide = (playerSide == "X") ? "O" : "X";
+        if (computerPlays)
+            computerTurn = !computerTurn;
 
         if(playerSide == "X")
         {
@@ -158,13 +256,15 @@ public class LocalGameController : MonoBehaviour
         gameOverText.text = value;
     }
 
-    //public void SetGameMode(string text)
-    //{
-    //    playerX.button.interactable = true;
-    //    playerO.button.interactable = true;
-    //    Debug.Log(text);
-    //    gameModePanel.SetActive(false);
-    //}
+    public void SetGameMode(string mode)
+    {
+        playerX.button.interactable = true;
+        playerO.button.interactable = true;
+        if (mode == "Single")
+            computerPlays = true;
+        Debug.Log(computerPlays);
+        gameModePanel.SetActive(false);
+    }
 
     public void SetStartingSide(string startingSide)
     {
@@ -172,10 +272,14 @@ public class LocalGameController : MonoBehaviour
         if(playerSide == "X")
         {
             SetPlayerColor(playerX, playerO);
+            if(computerPlays)
+                computerSide = "O";
         }
         else
         {
             SetPlayerColor(playerO, playerX);
+            if(computerPlays)
+                computerSide = "X";
         }
 
         StartGame();
@@ -190,7 +294,8 @@ public class LocalGameController : MonoBehaviour
 
     public void RestartGame()
     {
-        moveCount = 0;
+        computerTurn = false;
+        computerPlays = true;
         gameOverPanel.SetActive(false);
         SetPlayerButtons(true);
         SetPlayerColorInactive();
@@ -199,10 +304,11 @@ public class LocalGameController : MonoBehaviour
         for (int i = 0; i < buttonList.Length; i++)
         {
             buttonList[i].text = "";
+            values[i] = 0;
         }
 
         restartButton.SetActive(false);
-    }
+    }   
 
     void SetBoardInteractable(bool toggle)
     {
@@ -216,5 +322,10 @@ public class LocalGameController : MonoBehaviour
     {
         playerX.button.interactable = toggle;
         playerO.button.interactable = toggle;
+    }
+
+    private int GetPlayerValue(string player)
+    {
+        return (player == "X") ? 1 : 2;
     }
 }
